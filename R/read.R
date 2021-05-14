@@ -17,12 +17,17 @@ read.antrax_output <- function(antrex_output_dir) {
 #' @param  data
 #'
 tranform.antrax_output <- function(data) {
-  data %>%
-    dplyr::group_by(.data$tracking_file) %>% # group data by tracking file (colony)
-    dplyr::mutate(frame = row_number()) %>% # add variable of frame
-    dplyr::ungroup() %>%
-    tidyr::pivot_longer(cols = !.data$tracking_file & !.data$frame, names_to = "colour_axis", values_to = "value") %>% # make colour and axis as one variable of the column
-    tidyr::separate(col = .data$colour_axis, into = c("colour", "axis"), sep = "_") %>% # separate colour and axis into different variables
-    tidyr::pivot_wider(names_from = .data$axis, values_from = .data$value) %>% # make x and y axis into different variables
-    dplyr::rename(x = `1`, y = `2`) # rename x and y axis
+   setDT(data)
+   data[, frame:=1:.N, by = tracking_file] # group data by tracking file (colony) and add variable of frame
+   # it's ridiculous that one need to include data.table in Depends of the package DESCRIPTION file to use :=
+   data <- melt(data,
+        id.vars = c("tracking_file", "frame"),
+        measure.vars = patterns("_[1,2]$"),
+        variable.name = "colour_axis",
+        value.name = "value") # reshape to long format, with each row represent the x,y axis of each individual at each frame
+   data[, c("colour","axis"):=tstrsplit(colour_axis, "_", fixed=TRUE)][colour_axis := NULL] #split the colour and axis column
+   data <- dcast(data,
+         c("tracking_file", "frame", "colour") ~ axis,
+         value.var = "value") # put x and y axis on the same row
 }
+
