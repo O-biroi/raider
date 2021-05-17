@@ -6,24 +6,27 @@ vroom("large.csv", delim = ",")
 library(tidyverse)
 library(fs)
 library(vroom)
-library(dtplyr)
+library(profvis)
 
 genetic_data <- read.antrax_output(antrex_output_dir = "/Users/zimai/polybox/DoctorToBe/01 Project documents/ZIM00 General documents /tracking/Mix colony networks/1 Data/1 Raw data/01 Position/")
-
+genetic_data <- read.antrax_output(antrex_output_dir = "/Volumes/Elements/01 Position/")
 genetic_data_cut <- genetic_data %>%
-  group_by(tracking_file) %>%
-  slice_head(n = 1000) %>%
+  group_by(file) %>%
+  slice_head(n = 10000) %>%
   ungroup()
 
-foo <- tranform.antrax_output(genetic_data_cut)
+saveRDS(genetic_data_cut, file = "test.rds")
 
+foo_full <- transform.antrax_output(genetic_data)
+vroom("/Volumes/Elements/01 Position/Genetic_B1_antxy.mat.csv")
 
+genetic_data_cut <- readRDS("test")
+setnames(genetic_data_cut, "tracking_file", "file")
 
-data %>%
-  dplyr::group_by(.data$tracking_file) %>% # group data by tracking file (colony)
-  dplyr::mutate(frame = row_number()) %>% # add variable of frame
-  dplyr::ungroup() %>%
-  tidyr::pivot_longer(cols = !.data$tracking_file & !.data$frame, names_to = "colour_axis", values_to = "value") %>% # make colour and axis as one variable of the column
-  tidyr::separate(col = .data$colour_axis, into = c("colour", "axis"), sep = "_") %>% # separate colour and axis into different variables
-  tidyr::pivot_wider(names_from = .data$axis, values_from = .data$value) %>% # make x and y axis into different variables
-  dplyr::rename(x = `1`, y = `2`) # rename x and y axis
+foo <- transform.antrax_output(genetic_data_cut)
+
+transform.antrax_output <- function(data) {
+  data.table::setDT(data) # use data.table format
+  data[, frame:=1:.N, by = tracking_file] # group data by tracking file (colony) and add variable of frame
+  # it's ridiculous that one need to include data.table in Depends of the package DESCRIPTION file to use :=
+}
