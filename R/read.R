@@ -8,7 +8,7 @@
 #'
 read.antrax_output <- function(antrex_output_dir) {
    table <- vroom(fs::dir_ls(path = antrex_output_dir, glob = "*_antxy.mat.csv"), id = "file", na = c("", "NA", "NaN")) # read all the file under antrex_folder using vroom, annotate NAs
-   table$tracking_file <- basename(table$tracking_file) # only keep the basename of the file in the tracking_file column
+   table$file <- basename(table$tracking_file) # only keep the basename of the file in the file column
    table
   }
 
