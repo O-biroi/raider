@@ -1,0 +1,31 @@
+---
+title: "Dealing with NaN data"
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+    code_folding: show
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+set.seed(1L) ## fix random generator
+time1 <- proc.time()
+```
+
+## Goal
+
+We aim to explore the most efficient way to 
+1. read the raw data of anTrax
+2. explore the distribution
+3. deal with NaN data
+```{r read raw data, eval = FALSE}
+
+```
