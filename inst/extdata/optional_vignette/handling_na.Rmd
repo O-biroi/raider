@@ -27,5 +27,11 @@ We aim to explore the most efficient way to
 2. explore the distribution
 3. deal with NaN data
 ```{r read raw data, eval = FALSE}
+# read file 
+daniel_raw <- read_antrax_output(antrax_output_dir = "/Users/zimai/polybox/DoctorToBe/01 Project documents/ZIM00 General Documents/tracking/Daniel/", suffix = "*TOTant_xy.csv", col_names = c("X1_1", "X1_2", "X2_1", "X2_2", "X3_1", "X3_2", "X4_1", "X4_2", "X5_1", "X5_2", "X6_1", "X6_2", "X7_1", "X7_2", "X8_1", "X8_2", "X9_1", "X9_2"))
+daniel_rformat <- transform_antrax_output(daniel_raw)
+
+foo <- list.files(path = "/Users/zimai/polybox/DoctorToBe/01 Project documents/ZIM00 General Documents/tracking/Daniel/", pattern = "*TOTant_xy.csv", full.names = TRUE) %>%
+  map(~vroom::vroom(., col_names = FALSE, na = "NaN"))
 
 ```
